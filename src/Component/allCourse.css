@@ -1,0 +1,17 @@
+.course-page {
+    margin: 20px;
+    border-radius: 2px;
+    background-color: #fff;
+}
+
+.course-sel {
+    padding: 20px;
+}
+
+.course-sel .sel {
+    margin-left: 20px;
+}
+
+.course-inf {
+    padding: 0 20px;
+}

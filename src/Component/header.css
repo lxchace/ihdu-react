@@ -1,0 +1,45 @@
+.head {
+    position: 'fixed';
+    z-index: 1;
+    width: '100%';
+  }
+  
+  .head .ant-row {
+    overflow: hidden;
+  }
+  
+  .logo {
+    height: 64px;
+    text-decoration: none;
+    color: #61dafb;
+    background-color: transparent;
+    float: left;
+    overflow: hidden;
+    line-height: 64px;
+    white-space: nowrap;
+  }
+  
+  .logo img {
+    height: 20px;
+    vertical-align: sub;
+  }
+  
+  .logo span {
+    font-size: 20px;
+    margin-left: 10px;
+    font-weight: 700;
+  }
+  
+  .head .ant-dropdown-link {
+    margin-left: 10px;
+    flex: 0 0 auto;
+    height: 100%;
+    float: right;
+    font-size: 16px;
+    color: #61dafb;
+    font-weight: 500;
+  }
+
+  .head .ant-dropdown-link:hover {
+    cursor: pointer;
+  }

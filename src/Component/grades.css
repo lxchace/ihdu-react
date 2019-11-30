@@ -1,0 +1,25 @@
+.grades-page {
+    margin: 20px;
+    border-radius: 2px;
+    background-color: #fff;
+}
+
+.grades-sel {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.grades-sel .sel {
+    margin-left: 20px;
+}
+
+.grades-sel .xnxq {
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.sTag {
+    vertical-align: -webkit-baseline-middle;
+    margin-right: 20px;
+    font-weight: bold;
+}
