@@ -36,6 +36,11 @@ class AccountPage extends Component{
         return request().get(url)
     }
 
+    modifyAccount(id, data){
+        let url = "/api/hdu/"+id+"/modify/";
+        return request().post(url, data)
+    }
+
     addIndexToData(data){
         let newData = []
         for (let i = 0; i < data.length; i++) {
@@ -79,7 +84,6 @@ class AccountPage extends Component{
                 message.error("添加账户失败，请重试！");
                 return
             }
-            console.log('Received values of form: ', values);
             let res = await this.addAccount(values);
             if(res.code === 200){
                 message.success("添加账户成功~")
@@ -115,7 +119,31 @@ class AccountPage extends Component{
     }
 
     handleModifyOk = () => {
-        return
+        const { form } = this.modifyFormRef.props;
+        form.validateFields(async (err, values) => {
+            if(err){
+                message.error("修改账户失败，请重试！");
+                return
+            }
+            console.log(values)
+            let res = await this.modifyAccount(values.id, values);
+            if(res.code === 200){
+                message.success("修改账户成功~")
+                let res = await this.getAccount();
+                if(res.code === 200){
+                    let data = this.addIndexToData(res.data);
+                    this.setState({
+                        account: data,
+                        modifyModal: Object.assign({}, this.state.modifyModal, {visible: false}),
+                    })
+                }else{
+                    message.error("获取账户信息失败，请刷新页面重试~");
+                }
+                form.resetFields();
+            }else{
+                message.error(res.msg);
+            }
+        });
     }
 
     handleConfirmOk = async (id) => {
@@ -221,7 +249,7 @@ class AccountPage extends Component{
                     visible={this.state.modifyModal.visible}
                     handleCancel={this.handleModifyCancel}
                     handleOk={this.handleModifyOk}
-                    form={<AddForm wrappedComponentRef={this.saveModifyFormRef} xhDisabled={true} xh={this.state.modifyModal.record.xh} />}
+                    form={<AddForm wrappedComponentRef={this.saveModifyFormRef} xhDisabled={true} record={this.state.modifyModal.record} />}
                 />
             </div>
         )
@@ -255,7 +283,15 @@ class AddFormWithoutCreate extends Component{
         return (
             <Form>
                 <Form.Item>
-                    {getFieldDecorator("xh")(
+                    {getFieldDecorator("id", {initialValue: this.props.record ? this.props.record.id:""})(<></>)}
+                </Form.Item>
+                <Form.Item>
+                    {getFieldDecorator("xh",
+                        {
+                            initialValue: this.props.record ? this.props.record.xh:"",
+                            rules: [{type: 'number', required: true, message: "请输入学号", transform:(value)=> {return Number(value)}}]
+                        }
+                    )(
                         <Input
                             prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                             placeholder="学号"
@@ -265,7 +301,11 @@ class AddFormWithoutCreate extends Component{
                     )}
                 </Form.Item>
                 <Form.Item>
-                    {getFieldDecorator("pwd")(
+                    {getFieldDecorator("pwd",
+                        {
+                            rules: [{required: true, message: "请输入密码"}]
+                        }
+                    )(
                         <Input
                             prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                             type="password"

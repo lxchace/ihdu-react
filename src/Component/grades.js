@@ -118,7 +118,26 @@ class GradesTable extends Component{
         let url = "/api/jwxt/"+id+"/refreshgrades/";
         let res = await request().get(url);
         if(res.code === 201){
-            message.info("请求已发送，请稍等片刻后刷新表格~");
+            message.info("请求已发送，页面稍后将自动更新~");
+            let cnt = 0;
+            let timer = setInterval(async() => {
+                let newData = await this.getGrades();
+                if(newData.code === 200){
+                    this.setState({
+                        grades: newData.data.grades,
+                        points: newData.data.points,
+                        update_time: newData.data.update_time,
+                        xn: newData.data.xn,
+                        xq: newData.data.xq,
+                    })
+                    clearInterval(timer);
+                    message.success("成绩更新成功！（若最后更新时间未变，请检查学号密码~）");
+                }else if(cnt++ >= 5){
+                    message.error("请检查学号密码是否正确！", 10);
+                    clearInterval(timer);
+                }
+                console.log("timer~", cnt)
+            }, 2000)
         }else{
             message.error("请求失败，请重试！");
         }
@@ -158,6 +177,14 @@ class GradesTable extends Component{
                 xn: res.data.xn,
                 xq: res.data.xq,
             })
+        }else if(res.code === 410){
+            this.setState({
+                XH_now: value,
+                grades: [],
+                points: 5,
+                update_time: null,
+            })
+            message.error("请先点击刷新成绩，若一直未出现成绩，请检查学号密码是否正确！");
         }else{
             this.setState({
                 XH_now: value,
@@ -165,7 +192,7 @@ class GradesTable extends Component{
                 points: 5,
                 update_time: null,
             })
-            message.error("获取成绩失败，请检查学号密码是否正确！");
+            message.error("获取成绩失败，请稍后再试！");
         }
     }
 
@@ -178,13 +205,22 @@ class GradesTable extends Component{
                 update_time: res.data.update_time,
                 xn: value,
             })
-        }else{
+        }else if(res.code === 410){
             this.setState({
+                XH_now: value,
                 grades: [],
                 points: 5,
                 update_time: null,
             })
-            message.error("获取成绩失败，请检查学号密码是否正确！");
+            message.error("请先点击刷新成绩，若一直未出现成绩，请检查学号密码是否正确！");
+        }else{
+            this.setState({
+                XH_now: value,
+                grades: [],
+                points: 5,
+                update_time: null,
+            })
+            message.error("获取成绩失败，请稍后再试！");
         }
     }
 
@@ -197,13 +233,22 @@ class GradesTable extends Component{
                 update_time: res.data.update_time,
                 xq: value,
             })
-        }else{
+        }else if(res.code === 410){
             this.setState({
+                XH_now: value,
                 grades: [],
                 points: 5,
                 update_time: null,
             })
-            message.error("获取成绩失败，请检查学号密码是否正确！");
+            message.error("请先点击刷新成绩，若一直未出现成绩，请检查学号密码是否正确！");
+        }else{
+            this.setState({
+                XH_now: value,
+                grades: [],
+                points: 5,
+                update_time: null,
+            })
+            message.error("获取成绩失败，请稍后再试！");
         }
     }
 
