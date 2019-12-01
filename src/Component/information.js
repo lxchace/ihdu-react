@@ -156,7 +156,16 @@ class Information extends Component {
         console.log(res);
         if(res.code === 200){
             message.success("修改个人信息成功~");
+            let data = res.data;
             this.setState({
+                id: data.id,
+                username: data.username,
+                nickname: data.nickname,
+                email: data.email,
+                validateEmail: data.validateEmail,
+                phone: data.phone,
+                validatePhone: data.validatePhone,
+                lastLogin: data.lastLogin,
                 password: "",
                 newPassword: ""
             })

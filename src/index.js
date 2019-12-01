@@ -13,6 +13,7 @@ import browserHistory from './Component/history';
 import store from "./Store";
 import Register from './Component/register';
 import Information from './Component/information';
+import AccountPage from './Component/account';
 
 
 const Root = (
@@ -24,6 +25,7 @@ const Root = (
             <Route path="/register" component={Register} />
             <Route path="/information" component={Information} />
             <Route path="/grade" component={GradesPage} />
+            <Route path="/account" component={AccountPage} />
         </Router>
     </Provider>
 )

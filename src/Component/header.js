@@ -84,9 +84,7 @@ class NavBar extends Component{
           <Link to="/information/">我的信息</Link>
         </Menu.Item>
         <Menu.Item key="1">
-          <a rel="noopener noreferrer" href="/">
-            test2
-          </a>
+          <Link to="/account/">账号管理</Link>
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="3">
@@ -139,6 +137,13 @@ class NavBar extends Component{
             <Menu.Item key="3">
               <Link to="/information/">
                 我的信息
+              </Link>
+            </Menu.Item>
+          ):(<></>)}
+          {this.props.isLogin ? (
+            <Menu.Item key="4">
+              <Link to="/account/">
+                账号管理
               </Link>
             </Menu.Item>
           ):(<></>)}
