@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './information.css'
 import { request } from "./axiosHandle";
-import { message, Form, Input, PageHeader, Divider, Button, Row, Col, Tooltip, Icon } from 'antd';
+import { message, Form, Input, PageHeader, Divider, Button, Row, Col, Tooltip, Icon, Modal } from 'antd';
 
 class Information extends Component {
     constructor(props){
@@ -28,7 +28,11 @@ class Information extends Component {
             passwordInput: {
                 status: "warning",
                 help: ""
-            }
+            },
+            emailBtn: "验证邮箱",
+            phoneBtn: "验证手机",
+            modalType: "email",
+            visible: false
         }
     }
 
@@ -59,8 +63,10 @@ class Information extends Component {
                 nickname: data.nickname,
                 email: data.email,
                 validateEmail: data.validateEmail,
+                emailBtn: data.validateEmail ? "已验证":"验证邮箱",
                 phone: data.phone,
                 validatePhone: data.validatePhone,
+                phoneBtn: data.validatePhone ? "已验证":"验证手机",
                 lastLogin: data.lastLogin
             })
         }else{
@@ -163,8 +169,10 @@ class Information extends Component {
                 nickname: data.nickname,
                 email: data.email,
                 validateEmail: data.validateEmail,
+                emailBtn: data.validateEmail ? "已验证":"验证邮箱",
                 phone: data.phone,
                 validatePhone: data.validatePhone,
+                phoneBtn: data.validatePhone ? "已验证":"验证手机",
                 lastLogin: data.lastLogin,
                 password: "",
                 newPassword: ""
@@ -175,13 +183,98 @@ class Information extends Component {
         }
     }
 
-    handleEmailClick = () => {
-        message.info("验证功能还在开发中~")
+    sendEmail(){
+        let url = "/api/user/sendmail/";
+        return request().get(url)
+    }
+
+    valiEmail(code){
+        let url = "/api/user/validatemail/";
+        let data = {
+            code: code
+        }
+        return request().post(url, data)
+    }
+
+    handleEmailClick = async () => {
+        let res = await this.sendEmail();
+        if(res.code === 200){
+            message.success("验证邮件已发送！");
+            this.setState({
+                visible: true,
+                modalType: "email"
+            })
+        }else{
+            message.error("验证邮件发送失败，请重试~")
+        }
     }
 
     handlePhoneClick = () => {
-        message.info("验证功能还在开发中~")
+        message.info("手机验证功能还在开发中~");
+        this.setState({
+            visible: true,
+            modalType: "phone"
+        })
     }
+
+    handleModalCancel = () => {
+        Modal.confirm({
+            title: "提示",
+            content: "您确认取消此次验证吗？若您取消了本次验证，下次点击 验证 按钮会有新的验证码发到您的设备！",
+            okText: '确认',
+            cancelText: '取消',
+            onOk: () => {
+                this.setState({
+                    visible: false
+                })
+                const { form } = this.formRef.props;
+                form.resetFields();
+            },
+        });
+    }
+
+    handleModalOk = () => {
+        const { form } = this.formRef.props;
+        form.validateFields(async (err, values) => {
+            if(err){
+                message.error("验证失败，请重试！");
+                return
+            }
+            if(values.type === "email"){
+                let res1 = await this.valiEmail(values.code);
+                if(res1.code === 200){
+                    message.success("验证成功！");
+                    this.setState({
+                        visible: false,
+                        validateEmail: true,
+                        emailBtn: "已验证"
+                    })
+                }else{
+                    message.error("验证失败！");
+                    message.error(res1.msg);
+                }
+            }else if(values.type === "phone"){
+                let res2 = await this.valiEmail(values.code);
+                if(res2.code === 200){
+                    message.success("验证成功！");
+                    this.setState({
+                        visible: false,
+                        validatePhone: true,
+                        phoneBtn: "已验证"
+                    })
+                }else{
+                    message.error("验证失败！");
+                    message.error(res2.msg);
+                }
+            }
+            form.resetFields();
+            return
+        })
+    }
+
+    saveFormRef = formRef => {
+        this.formRef = formRef;
+    };
 
     render(){
         return (
@@ -200,7 +293,7 @@ class Information extends Component {
                     <Form.Item label={
                             <span>
                                 邮箱&nbsp;
-                                <Tooltip title="如果“验证邮箱”按钮为灰色，则此邮箱已认证！">
+                                <Tooltip title="若您修改了邮箱，请先提交修改信息再验证，否则邮件会发送到您以前的邮箱！">
                                     <Icon type="question-circle-o" />
                                 </Tooltip>
                             </span>
@@ -211,14 +304,14 @@ class Information extends Component {
                                 <Input value={this.state.email} type="email" allowClear={true} onChange={this.handleEmailChange} />
                             </Col>
                             <Col span={6}>
-                                <Button disabled={this.state.validateEmail} onClick={this.handleEmailClick}>验证邮箱</Button>
+                                <Button disabled={this.state.validateEmail} onClick={this.handleEmailClick}>{this.state.emailBtn}</Button>
                             </Col>
                         </Row>
                     </Form.Item>
                     <Form.Item label={
                             <span>
                                 手机&nbsp;
-                                <Tooltip title="如果“验证手机”按钮为灰色，则此手机已认证！">
+                                <Tooltip title="若您修改了手机，请先提交修改信息再验证，否则短信会发送到您以前的号码！">
                                     <Icon type="question-circle-o" />
                                 </Tooltip>
                             </span>
@@ -229,7 +322,7 @@ class Information extends Component {
                                 <Input value={this.state.phone} type="tel" allowClear={true} onChange={this.handlePhoneChange} />
                             </Col>
                             <Col span={6}>
-                                <Button disabled={this.state.validatePhone} onClick={this.handlePhoneClick}>验证手机</Button>
+                                <Button disabled={this.state.validatePhone} onClick={this.handlePhoneClick}>{this.state.phoneBtn}</Button>
                             </Col>
                         </Row>
                     </Form.Item>
@@ -247,9 +340,57 @@ class Information extends Component {
                         <Button type="primary" htmlType="submit">修改信息</Button>
                     </Form.Item>
                 </Form>
+                <ModalForm 
+                    wrappedComponentRef={this.saveFormRef}
+                    visible={this.state.visible}
+                    type={this.state.modalType}
+                    handleOk={this.handleModalOk}
+                    handleCancel={this.handleModalCancel}
+                />
             </div>
         )
     }
 }
+
+class ModalFormWithoutCreate extends Component{
+
+    render(){
+        const { getFieldDecorator } = this.props.form;
+        return (
+            <Modal
+                title="请输入验证码"
+                visible={this.props.visible}
+                onOk={this.props.handleOk}
+                onCancel={this.props.handleCancel}
+                okText="提交"
+                cancelText="取消"
+                width="250px"
+                closable={false}
+                maskClosable={false}
+            >
+                <Form>
+                    <Form.Item>
+                        {getFieldDecorator("type", {initialValue: this.props.type})(<></>)}
+                    </Form.Item>
+                    <Form.Item>
+                        {getFieldDecorator("code",
+                            {
+                                rules: [{required: true, message: "请输入验证码"}]
+                            }
+                        )(
+                            <Input
+                                prefix={<Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                placeholder="验证码"
+                                style={{ width:"200px" }}
+                            />
+                        )}
+                    </Form.Item>
+                </Form>
+            </Modal>
+        )
+    }
+}
+
+const ModalForm = Form.create()(ModalFormWithoutCreate);
 
 export default Information;

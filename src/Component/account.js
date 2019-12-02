@@ -125,7 +125,6 @@ class AccountPage extends Component{
                 message.error("修改账户失败，请重试！");
                 return
             }
-            console.log(values)
             let res = await this.modifyAccount(values.id, values);
             if(res.code === 200){
                 message.success("修改账户成功~")
