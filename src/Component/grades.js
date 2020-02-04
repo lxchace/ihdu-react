@@ -133,7 +133,7 @@ class GradesTable extends Component{
                     clearInterval(timer);
                     message.success("成绩更新成功！（若最后更新时间未变，请检查学号密码~）");
                 }else if(cnt++ >= 5){
-                    message.error("请检查教务系统可达或者学号密码是否正确！", 10);
+                    message.error("请检查教务系统可达（教务系统夜间维护）或者学号密码是否正确！", 10);
                     clearInterval(timer);
                 }
                 console.log("timer~", cnt)

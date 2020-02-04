@@ -14,6 +14,7 @@ import store from "./Store";
 import Register from './Component/register';
 import Information from './Component/information';
 import AccountPage from './Component/account';
+import FootBar from "./Component/footer";
 
 
 const Root = (
@@ -26,6 +27,7 @@ const Root = (
             <Route path="/information" component={Information} />
             <Route path="/grade" component={GradesPage} />
             <Route path="/account" component={AccountPage} />
+            <FootBar />
         </Router>
     </Provider>
 )

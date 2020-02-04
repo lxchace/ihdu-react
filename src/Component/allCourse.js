@@ -22,14 +22,15 @@ class CoursePage extends Component{
                 },
             },
             sel: {
-                xn: "2019-2020",
-                xq: "1",
+                xn: "",
+                xq: "",
                 search: null,
             }
         };
         this.changeTable = this.changeTable.bind(this);
         this.changeXN = this.changeXN.bind(this);
         this.changeXQ = this.changeXQ.bind(this);
+        this.changeXNXQ = this.changeXNXQ.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
     }
 
@@ -86,6 +87,10 @@ class CoursePage extends Component{
         this.changeTable(undefined,undefined,value);
     }
 
+    changeXNXQ(xn, xq){
+        this.changeTable(undefined,xn,xq);
+    }
+
     handleSearch(value){
         this.changeTable(undefined,undefined,undefined,value);
     }
@@ -93,7 +98,7 @@ class CoursePage extends Component{
     render(){
         return (
             <div className="course-page">
-                <SelBar sel={this.state.sel} handleXNChange={this.changeXN} handleXQChange={this.changeXQ} handleSearch={this.handleSearch} />
+                <SelBar sel={this.state.sel} handleXNXQChange={this.changeXNXQ} handleSearch={this.handleSearch} />
                 <CourseInf course={this.state.course} handleTableChange={this.changeTable} />
             </div>
         )
@@ -105,8 +110,8 @@ class SelBar extends Component{
     constructor(props){
         super(props);
         this.state = {
-            xn: this.props.sel.xn,
-            xq: this.props.sel.xq,
+            xn: '',
+            xq: '',
             search: this.props.sel.search,
             allxn: [],
             allxq: [],
@@ -125,6 +130,7 @@ class SelBar extends Component{
                 allxn: res.data.xn,
                 allxq: res.data.xq,
             }) 
+            this.props.handleXNXQChange(res.data.now.xn, res.data.now.xq);
         }else{
             console.log(res);
             message.error("获取所有学年学期失败，请刷新页面重试！");
@@ -146,14 +152,14 @@ class SelBar extends Component{
             <Row className="course-sel">
                 <Col className="sel" md={4} lg={4} xl={4} xxl={4}>
                     学年：
-                    <Select defaultValue={this.props.sel.xn} style={{ width: 120 }} onChange={this.props.handleXNChange}>
+                    <Select value={this.props.sel.xn} style={{ width: 120 }} onChange={(value) => this.props.handleXNXQChange(value)}>
                     {xns}
                     </Select>
                 </Col>
                 <Col xs={24} sm={24} md={0} lg={0} xl={0} xxl={0} style={{ height: "10px" }} />
                 <Col className="sel" md={4} lg={4} xl={4} xxl={4}>
                     学期：
-                    <Select defaultValue={this.props.sel.xq} style={{ width: 120 }} onChange={this.props.handleXQChange}>
+                    <Select value={this.props.sel.xq} style={{ width: 120 }} onChange={(value) => this.props.handleXNXQChange(undefined, value)}>
                     {xqs}
                     </Select>
                 </Col>
